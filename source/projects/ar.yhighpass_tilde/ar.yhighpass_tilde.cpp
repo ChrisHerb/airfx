@@ -10,11 +10,11 @@ public:
 
 	inlet<> in1 {this, "(signal) Input1"};
 	inlet<> in2 {this, "(signal) Input2"};
+	inlet<> in3 {this, "(signal) Frequency"};
 	outlet<> out1 {this, "(signal) Output1", "signal"};
 	outlet<> out2 {this, "(signal) Output2", "signal"};
 
 	attribute<number, threadsafe::no, limit::clamp> A {this, "gain", 0.1, range {0.0, 1.0} };
-	attribute<number, threadsafe::no, limit::clamp> B {this, "freq", 0.5, range {0.0, 1.0} };
 	attribute<number, threadsafe::no, limit::clamp> C {this, "reson8", 0.1, range {0.0, 1.0} };
 	attribute<number, threadsafe::no, limit::clamp> D {this, "resedge", 0.1, range {0.0, 1.0} };
 	attribute<number, threadsafe::no, limit::clamp> E {this, "output", 1.0, range {0.0, 1.0} };
@@ -51,6 +51,12 @@ public:
 		inTrimA = inTrimB;
 		inTrimB = A*10.0;
 		
+		double B = _input.samples(2)[0];
+        if (B > 1.0)
+            B = 1.0;
+        else if (B < 0.0)
+            B = 0.0;
+
 		biquad[biq_freq] = pow(B,3)*20000.0;
 		if (biquad[biq_freq] < 15.0) biquad[biq_freq] = 15.0;
 		biquad[biq_freq] /= samplerate();
